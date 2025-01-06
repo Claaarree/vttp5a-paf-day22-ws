@@ -35,13 +35,14 @@ create table dept (
 
 select "Creating rsvp table...";
 create table rsvp (
-    email varchar(50) not null, -- this is the PK
+    rsvp_id int auto_increment, -- this is the PK
+    email varchar(50) not null, 
     name varchar(128) not null,
     phone varchar(10) not null,
     confirmation_date date not null,
     comments text,
 
-    constraint pk_email primary key(email)
+    constraint pk_rsvp_id primary key(rsvp_id)
 );
 
 -- line below is a print statement

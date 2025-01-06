@@ -1,8 +1,12 @@
 package vttp5a.paf.day22ws.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 public class Rsvp {
     private String email;
@@ -49,7 +53,21 @@ public class Rsvp {
         r.setPhoneNumber(rs.getString("phone"));
         r.setConfirmationDate(rs.getDate("confirmation_date"));
         r.setComments(rs.getString("comments"));
-        
+
         return r;
+    }
+
+    public static JsonObject toJson(Rsvp r){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String confirmDateString = sdf.format(r.getConfirmationDate());
+
+        JsonObject jObject = Json.createObjectBuilder()
+            .add("email", r.getEmail())
+            .add("phone", r.getPhoneNumber())
+            .add("confirmDate", confirmDateString)
+            .add("comments", r.getComments())
+            .build();
+
+        return jObject;
     }
 }
