@@ -4,6 +4,7 @@ import java.net.URI;
 import java.text.ParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.json.Json;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonObjectBuilder;
 import vttp5a.paf.day22ws.service.RsvpService;
 
 @RestController
@@ -31,8 +34,8 @@ public class RsvpRestController {
         return res;
     }
 
-    @GetMapping(path = "/rsvp", produces = "application/json")
-    public ResponseEntity<String> getRsvpByName(@RequestParam String name) {
+    @GetMapping(path = "/rsvp", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getRsvpByName(@RequestParam (defaultValue = "adele") String name) {
         JsonArray jArray = rsvpService.getRsvpByName(name);
         
         try {
@@ -44,7 +47,7 @@ public class RsvpRestController {
         return ResponseEntity.ok(jArray.toString());
     }
 
-    @PostMapping(path = "/rsvp", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/rsvp", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addRsvp(@RequestBody String data) {
         Boolean isAdded = null;
         
@@ -57,13 +60,14 @@ public class RsvpRestController {
             e.printStackTrace();
         }
 
-        URI url = UriComponentsBuilder.fromUriString("http://localhost:8080")
-                .build().toUri();
-
+        JsonObjectBuilder jObjectbBuilder = Json.createObjectBuilder();
+    
         if(isAdded){
-            return ResponseEntity.created(url).body("Successfully added!");
+            jObjectbBuilder.add("status", "Successfully added!");
+            return ResponseEntity.status(201).body(jObjectbBuilder.build().toString());
         }    
-        return ResponseEntity.status(404).body("Failed to add rsvp!");
+        jObjectbBuilder.add("status", "Failed to add rsvp!");
+        return ResponseEntity.status(404).body(jObjectbBuilder.build().toString());
     }
 
     // TODO update
